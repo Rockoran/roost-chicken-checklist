@@ -9,12 +9,76 @@
 <body>
   <div class="container">
     <h1>Project Overpowered - Chicken Checklist</h1>
+    
+    <!-- Progress Section -->
+    <div id="progress-section">
+      <div id="progress-bar-container">
+        <div id="progress-bar">
+          <div id="progress-fill"></div>
+        </div>
+        <div id="progress-text">0/81 (0%)</div>
+      </div>
+      <div id="category-stats"></div>
+    </div>
+    
+    <!-- Controls Section -->
+    <div id="controls-section">
+      <!-- Theme Toggle -->
+      <button id="theme-toggle">🌙 Dark Mode</button>
+      
+      <!-- Search & Filter -->
+      <div id="search-filter">
+        <input type="text" id="search-box" placeholder="🔍 Search chickens...">
+        <select id="type-filter">
+          <option value="all">All Types</option>
+          <option value="found">🌍 Found</option>
+          <option value="crafted">🔨 Crafted</option>
+          <option value="bred">🐔 Bred</option>
+        </select>
+        <select id="status-filter">
+          <option value="all">All Status</option>
+          <option value="completed">✅ Completed</option>
+          <option value="uncompleted">⭕ Not Done</option>
+        </select>
+        <select id="difficulty-filter">
+          <option value="all">All Difficulty</option>
+          <option value="easy">Easy (0-2 gen)</option>
+          <option value="medium">Medium (3-5 gen)</option>
+          <option value="hard">Hard (6+ gen)</option>
+        </select>
+      </div>
+      
+      <!-- Data Management -->
+      <div id="data-controls">
+        <button id="export-btn">📤 Export</button>
+        <input type="file" id="import-input" accept=".json" style="display: none;">
+        <button id="import-btn">📥 Import</button>
+        <button id="clearBtn">🗑️ Clear All</button>
+      </div>
+    </div>
+    
+    <!-- Next Steps Section -->
+    <div id="next-steps-section">
+      <h3>🎯 What Can I Breed Next?</h3>
+      <div id="recommendations"></div>
+    </div>
+    
+    <!-- Path Optimizer -->
+    <div id="path-optimizer-section">
+      <h3>🧠 Breeding Path Optimizer</h3>
+      <select id="target-chicken">
+        <option value="">Select target chicken...</option>
+      </select>
+      <button id="optimize-btn">🚀 Find Best Path</button>
+      <div id="optimal-path"></div>
+    </div>
+    
     <div id="checklist"></div>
-    <button id="clearBtn">Clear All</button>
   </div>
   <script src="chickens.js"></script>
   <script src="breeding-recipes.js"></script>
   <script src="crafting-tree.js"></script>
+  <script src="features.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

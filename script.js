@@ -9,11 +9,15 @@ function saveChecklist(data) {
   localStorage.setItem('roostChecklist', JSON.stringify(data));
 }
 
-function renderChecklist() {
+// Current filtered chicken list
+let currentFilteredChickens = [...CHICKENS];
+
+function renderFilteredChecklist() {
   const checklistDiv = document.getElementById('checklist');
   checklistDiv.innerHTML = '';
   const saved = loadChecklist();
-  CHICKENS.forEach(chicken => {
+  
+  currentFilteredChickens.forEach(chicken => {
     const item = document.createElement('div');
     item.className = 'chicken-item';
     
@@ -27,6 +31,8 @@ function renderChecklist() {
     checkbox.addEventListener('change', () => {
       saved[chicken] = checkbox.checked;
       saveChecklist(saved);
+      updateProgressDisplay();
+      updateRecommendations();
     });
     
     const label = document.createElement('label');
@@ -72,6 +78,10 @@ function renderChecklist() {
   });
 }
 
+function renderChecklist() {
+  renderFilteredChecklist();
+}
+
 function toggleCraftingTree(chickenName, itemElement) {
   let treeDiv = itemElement.querySelector('.crafting-tree');
   
@@ -113,10 +123,117 @@ function toggleCraftingTree(chickenName, itemElement) {
   itemElement.appendChild(treeDiv);
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  renderChecklist();
-  document.getElementById('clearBtn').addEventListener('click', () => {
-    localStorage.removeItem('roostChecklist');
-    renderChecklist();
+function applyFilters() {
+  const searchTerm = document.getElementById('search-box').value;
+  const typeFilter = document.getElementById('type-filter').value;
+  const statusFilter = document.getElementById('status-filter').value;
+  const difficultyFilter = document.getElementById('difficulty-filter').value;
+  
+  currentFilteredChickens = filterChickens(searchTerm, typeFilter, statusFilter, difficultyFilter);
+  renderFilteredChecklist();
+}
+
+function updateRecommendations() {
+  const breedable = getBreedableChickens();
+  const recommendationsDiv = document.getElementById('recommendations');
+  
+  if (breedable.length === 0) {
+    recommendationsDiv.innerHTML = '<p style="color: #666; font-style: italic;">Complete more base chickens to unlock breeding recommendations!</p>';
+    return;
+  }
+  
+  recommendationsDiv.innerHTML = '';
+  breedable.slice(0, 6).forEach(rec => {
+    const recDiv = document.createElement('div');
+    recDiv.className = 'recommendation';
+    recDiv.innerHTML = `
+      <strong>${rec.name}</strong><br>
+      <small>${rec.parents[0]} + ${rec.parents[1]}</small><br>
+      <em>${rec.category}</em>
+    `;
+    recDiv.addEventListener('click', () => {
+      // Scroll to chicken in list
+      const chickenElements = document.querySelectorAll('.chicken-item label');
+      for (const el of chickenElements) {
+        if (el.textContent === rec.name) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          el.click(); // Show breeding info
+          break;
+        }
+      }
+    });
+    recommendationsDiv.appendChild(recDiv);
   });
+}
+
+function populateTargetSelector() {
+  const select = document.getElementById('target-chicken');
+  CHICKENS.forEach(chicken => {
+    const option = document.createElement('option');
+    option.value = chicken;
+    option.textContent = chicken;
+    select.appendChild(option);
+  });
+}
+
+function showOptimalPath() {
+  const targetChicken = document.getElementById('target-chicken').value;
+  if (!targetChicken) return;
+  
+  const path = findOptimalPath(targetChicken);
+  const pathDiv = document.getElementById('optimal-path');
+  
+  if (path.length === 0) {
+    pathDiv.innerHTML = '<p style="color: #4caf50;">✅ You already have this chicken!</p>';
+  } else {
+    pathDiv.innerHTML = `
+      <h4>📋 Optimal Breeding Path for ${targetChicken}:</h4>
+      <ol>
+        ${path.map(step => `<li><strong>${step.chicken}</strong><br><small>${step.method}</small></li>`).join('')}
+      </ol>
+      <p><strong>Total steps:</strong> ${path.length}</p>
+    `;
+  }
+  
+  pathDiv.style.display = 'block';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Load dark mode preference
+  loadDarkModePreference();
+  
+  // Initial render
+  renderChecklist();
+  updateProgressDisplay();
+  updateRecommendations();
+  populateTargetSelector();
+  
+  // Event listeners
+  document.getElementById('theme-toggle').addEventListener('click', toggleDarkMode);
+  
+  document.getElementById('search-box').addEventListener('input', applyFilters);
+  document.getElementById('type-filter').addEventListener('change', applyFilters);
+  document.getElementById('status-filter').addEventListener('change', applyFilters);
+  document.getElementById('difficulty-filter').addEventListener('change', applyFilters);
+  
+  document.getElementById('export-btn').addEventListener('click', exportData);
+  document.getElementById('import-btn').addEventListener('click', () => {
+    document.getElementById('import-input').click();
+  });
+  document.getElementById('import-input').addEventListener('change', (e) => {
+    if (e.target.files[0]) {
+      importData(e.target.files[0]);
+    }
+  });
+  
+  document.getElementById('clearBtn').addEventListener('click', () => {
+    if (confirm('Are you sure you want to clear all progress?')) {
+      localStorage.removeItem('roostChecklist');
+      renderFilteredChecklist();
+      updateProgressDisplay();
+      updateRecommendations();
+    }
+  });
+  
+  document.getElementById('optimize-btn').addEventListener('click', showOptimalPath);
 });
