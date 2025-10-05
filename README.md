@@ -2,8 +2,6 @@
 
 A mobile-friendly web application for tracking chicken breeding progress in the **Project Overpowered** Minecraft modpack (1.12.2).
 
-https://rockoran.github.io/roost-chicken-checklist
-
 ## 🌟 Features
 
 - ✅ **Interactive Checklist** - Check off chickens as you breed them
@@ -77,6 +75,5 @@ Free to use and modify. Created for the Minecraft modding community.
 ---
 
 **Happy chicken breeding!** 🐔✨
-
 
 *Made for Project Overpowered modpack players*
