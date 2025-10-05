@@ -33,6 +33,9 @@ function renderFilteredChecklist() {
       saveChecklist(saved);
       updateProgressDisplay();
       updateRecommendations();
+      updatePriorityQueue();
+      updateDetailedStats();
+      checkAchievements();
     });
     
     const label = document.createElement('label');
@@ -206,7 +209,14 @@ document.addEventListener('DOMContentLoaded', () => {
   renderChecklist();
   updateProgressDisplay();
   updateRecommendations();
+  updatePriorityQueue();
+  updateDetailedStats();
+  updateAchievementDisplay();
   populateTargetSelector();
+  setupAdvancedSearch();
+  
+  // Check achievements on load
+  checkAchievements();
   
   // Event listeners
   document.getElementById('theme-toggle').addEventListener('click', toggleDarkMode);
@@ -229,9 +239,13 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('clearBtn').addEventListener('click', () => {
     if (confirm('Are you sure you want to clear all progress?')) {
       localStorage.removeItem('roostChecklist');
+      localStorage.removeItem('unlockedAchievements');
       renderFilteredChecklist();
       updateProgressDisplay();
       updateRecommendations();
+      updatePriorityQueue();
+      updateDetailedStats();
+      updateAchievementDisplay();
     }
   });
   
